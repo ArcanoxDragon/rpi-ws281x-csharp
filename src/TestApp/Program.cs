@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using rpi_ws281x;
 using TestApp;
 
 var cancelSource = new CancellationTokenSource();
@@ -34,7 +35,21 @@ do
 
 	if (animation != null)
 	{
-		animation.Execute(cancelSource.Token);
+		Console.Clear();
+		Console.Write("How many LEDs do you want to use? ");
+
+		if (!int.TryParse(Console.ReadLine(), out var ledCount))
+		{
+			Console.WriteLine("Invalid number.");
+			Thread.Sleep(1000);
+			continue;
+		}
+
+		var settings = Settings.CreateDefaultSettings();
+
+		settings.Channels[0] = new Channel(ledCount, 21, stripType: StripType.SK6812W_STRIP);
+
+		animation.Execute(settings, cancelSource.Token);
 
 		if (!cancelSource.TryReset())
 			cancelSource = new CancellationTokenSource();

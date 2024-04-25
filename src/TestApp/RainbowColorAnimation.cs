@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Threading;
 using rpi_ws281x;
 
@@ -19,20 +18,8 @@ namespace TestApp
 
 		private static int colorOffset;
 
-		public void Execute(CancellationToken cancellationToken)
+		public void Execute(Settings settings, CancellationToken cancellationToken)
 		{
-			Console.Clear();
-			Console.Write("How many LEDs to you want to use: ");
-
-			var ledCount = int.Parse(Console.ReadLine());
-
-			//The default settings uses a frequency of 800000 Hz and the DMA channel 10.
-			var settings = Settings.CreateDefaultSettings();
-
-			//Set brightness to maximum (255)
-			//Use Unknown as strip type. Then the type will be set in the native assembly.
-			settings.Channels[0] = new Channel(ledCount, 18, 255, false, StripType.WS2812_STRIP);
-
 			using var controller = new WS281x(settings);
 
 			while (!cancellationToken.IsCancellationRequested)

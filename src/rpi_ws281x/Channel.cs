@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-
-namespace rpi_ws281x
+﻿namespace rpi_ws281x
 {
 	/// <summary>
 	/// Represents the channel which holds the LEDs
@@ -9,25 +6,19 @@ namespace rpi_ws281x
 	public class Channel
 	{
 		public Channel() : this(0, 0) { }
-		
-		public Channel(int ledCount, int gpioPin) : this(ledCount, gpioPin, 255, false, rpi_ws281x.StripType.Unknown)	{ }
 
-		public Channel(int ledCount, int gpioPin, byte  brightness, bool invert, StripType stripType)
+		public Channel(int ledCount, int gpioPin, byte brightness = 255, bool invert = false, StripType stripType = StripType.Unknown)
 		{
 			GPIOPin = gpioPin;
 			Invert = invert;
 			Brightness = brightness;
 			StripType = stripType;
+			LEDs = new LED[ledCount];
 
-			var ledList = new List<LED>();
-			for(int i= 0; i<= ledCount-1; i++)
-			{
-				ledList.Add(new LED(i));
-			}
-
-			LEDs = new ReadOnlyCollection<LED>(ledList);
+			for (int i = 0; i <= ledCount - 1; i++)
+				LEDs[i] = new LED(i);
 		}
-		
+
 		/// <summary>
 		/// Returns the GPIO pin which is connected to the LED strip
 		/// </summary>
@@ -54,9 +45,8 @@ namespace rpi_ws281x
 		/// <summary>
 		/// Returns all LEDs on this channel
 		/// </summary>
-		public ReadOnlyCollection<LED> LEDs { get; private set; }
+		public LED[] LEDs { get; }
 
-		public int LEDCount { get => LEDs.Count; }
-		
+		public int LEDCount => LEDs.Length;
 	}
 }

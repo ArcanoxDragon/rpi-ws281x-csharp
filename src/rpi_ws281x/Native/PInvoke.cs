@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
+// ReSharper disable once CheckNamespace
 namespace Native
 {
 	internal class PInvoke
@@ -9,13 +10,13 @@ namespace Native
 
 		[DllImport("ws2811.so")]
 		public static extern ws2811_return_t ws2811_init(ref ws2811_t ws2811);
-		
+
 		[DllImport("ws2811.so")]
 		public static extern ws2811_return_t ws2811_render(ref ws2811_t ws2811);
 
 		[DllImport("ws2811.so")]
 		public static extern ws2811_return_t ws2811_wait(ref ws2811_t ws2811);
-		
+
 		[DllImport("ws2811.so")]
 		public static extern void ws2811_fini(ref ws2811_t ws2811);
 

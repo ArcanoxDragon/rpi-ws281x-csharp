@@ -1,6 +1,4 @@
 ﻿using Native;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace rpi_ws281x
 {
@@ -9,7 +7,6 @@ namespace rpi_ws281x
 	/// </summary>
 	public class Settings
 	{
-	
 		/// <summary>
 		/// Settings to initialize the WS281x controller
 		/// </summary>
@@ -19,7 +16,7 @@ namespace rpi_ws281x
 		{
 			Frequency = frequency;
 			DMAChannel = dmaChannel;
-			Channels = new Channel[PInvoke.RPI_PWM_CHANNELS];				
+			Channels = new Channel[PInvoke.RPI_PWM_CHANNELS];
 		}
 
 		/// <summary>

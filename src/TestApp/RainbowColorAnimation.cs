@@ -1,23 +1,21 @@
-﻿using rpi_ws281x;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
+using rpi_ws281x;
 
 namespace TestApp
 {
-	class RainbowColorAnimation : IAnimation
+	internal class RainbowColorAnimation : IAnimation
 	{
-		private static int colorOffset = 0;
+		private static int colorOffset;
 
 		public void Execute(AbortRequest request)
 		{
 			Console.Clear();
 			Console.Write("How many LEDs to you want to use: ");
 
-			var ledCount = Int32.Parse(Console.ReadLine());
+			var ledCount = int.Parse(Console.ReadLine());
 
 			//The default settings uses a frequency of 800000 Hz and the DMA channel 10.
 			var settings = Settings.CreateDefaultSettings();
@@ -26,27 +24,25 @@ namespace TestApp
 			//Use Unknown as strip type. Then the type will be set in the native assembly.
 			settings.Channels[0] = new Channel(ledCount, 18, 255, false, StripType.WS2812_STRIP);
 
-			using (var controller = new WS281x(settings))
+			using var controller = new WS281x(settings);
+			var colors = GetAnimationColors();
+			while (!request.IsAbortRequested)
 			{
-				var colors = GetAnimationColors();
-				while (!request.IsAbortRequested)
+				for (int i = 0; i <= controller.Settings.Channels[0].LEDCount - 1; i++)
 				{
-				
-					for (int i = 0; i <= controller.Settings.Channels[0].LEDCount - 1; i++)
-					{
-						var colorIndex = (i + colorOffset) % colors.Count;
-						controller.SetLEDColor(0, i, colors[colorIndex]);
-					}
-
-					controller.Render();
-
-					if (colorOffset == int.MaxValue)
-					{
-						colorOffset = 0;
-					}
-					colorOffset++;
-					System.Threading.Thread.Sleep(50);
+					var colorIndex = ( i + colorOffset ) % colors.Count;
+					controller.SetLEDColor(0, i, colors[colorIndex]);
 				}
+
+				controller.Render();
+
+				if (colorOffset == int.MaxValue)
+				{
+					colorOffset = 0;
+				}
+
+				colorOffset++;
+				Thread.Sleep(50);
 			}
 		}
 

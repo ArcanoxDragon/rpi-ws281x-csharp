@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
 using rpi_ws281x;
@@ -8,9 +7,19 @@ namespace TestApp
 {
 	internal class RainbowColorAnimation : IAnimation
 	{
+		private static readonly Color[] AnimationColors = [
+			Color.FromArgb(0x201000),
+			Color.FromArgb(0x202000),
+			Color.Green,
+			Color.FromArgb(0x002020),
+			Color.Blue,
+			Color.FromArgb(0x100010),
+			Color.FromArgb(0x200010),
+		];
+
 		private static int colorOffset;
 
-		public void Execute(AbortRequest request)
+		public void Execute(CancellationToken cancellationToken)
 		{
 			Console.Clear();
 			Console.Write("How many LEDs to you want to use: ");
@@ -25,13 +34,13 @@ namespace TestApp
 			settings.Channels[0] = new Channel(ledCount, 18, 255, false, StripType.WS2812_STRIP);
 
 			using var controller = new WS281x(settings);
-			var colors = GetAnimationColors();
-			while (!request.IsAbortRequested)
+
+			while (!cancellationToken.IsCancellationRequested)
 			{
 				for (int i = 0; i <= controller.Settings.Channels[0].LEDCount - 1; i++)
 				{
-					var colorIndex = ( i + colorOffset ) % colors.Count;
-					controller.SetLEDColor(0, i, colors[colorIndex]);
+					var colorIndex = ( i + colorOffset ) % AnimationColors.Length;
+					controller.SetLEDColor(0, i, AnimationColors[colorIndex]);
 				}
 
 				controller.Render();
@@ -44,21 +53,6 @@ namespace TestApp
 				colorOffset++;
 				Thread.Sleep(50);
 			}
-		}
-
-		private static List<Color> GetAnimationColors()
-		{
-			var result = new List<Color>();
-
-			result.Add(Color.FromArgb(0x201000));
-			result.Add(Color.FromArgb(0x202000));
-			result.Add(Color.Green);
-			result.Add(Color.FromArgb(0x002020));
-			result.Add(Color.Blue);
-			result.Add(Color.FromArgb(0x100010));
-			result.Add(Color.FromArgb(0x200010));
-
-			return result;
 		}
 	}
 }

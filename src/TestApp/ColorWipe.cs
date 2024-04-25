@@ -7,7 +7,7 @@ namespace TestApp
 {
 	internal class ColorWipe : IAnimation
 	{
-		public void Execute(AbortRequest request)
+		public void Execute(CancellationToken cancellationToken)
 		{
 			Console.Clear();
 			Console.Write("How many LEDs to you want to use: ");
@@ -23,20 +23,30 @@ namespace TestApp
 
 			using var controller = new WS281x(settings);
 
-			while (!request.IsAbortRequested)
+			try
 			{
-				Wipe(controller, Color.Red);
-				Wipe(controller, Color.Green);
-				Wipe(controller, Color.Blue);
+				while (!cancellationToken.IsCancellationRequested)
+				{
+					Wipe(controller, Color.Red, cancellationToken);
+					Wipe(controller, Color.Green, cancellationToken);
+					Wipe(controller, Color.Blue, cancellationToken);
+				}
+			}
+			catch (OperationCanceledException)
+			{
+				// Ignored
 			}
 		}
 
-		private static void Wipe(WS281x controller, Color color)
+		private static void Wipe(WS281x controller, Color color, CancellationToken cancellationToken)
 		{
 			for (int i = 0; i <= controller.Settings.Channels[0].LEDs.Length - 1; i++)
 			{
 				controller.SetLEDColor(0, i, color);
 				controller.Render();
+
+				cancellationToken.ThrowIfCancellationRequested();
+
 				Thread.Sleep(1000 / 15);
 			}
 		}

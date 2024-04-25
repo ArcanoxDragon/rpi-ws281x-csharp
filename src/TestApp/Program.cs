@@ -1,14 +1,17 @@
 ﻿using System;
+using System.Threading;
 using TestApp;
 
-var abort = new AbortRequest();
+var cancelSource = new CancellationTokenSource();
 
 Console.CancelKeyPress += (_, e) => {
 	e.Cancel = true;
-	abort.IsAbortRequested = true;
+	// ReSharper disable once AccessToModifiedClosure
+	cancelSource.Cancel();
 };
 
 var input = 0;
+
 do
 {
 	Console.Clear();
@@ -17,15 +20,24 @@ do
 	Console.WriteLine("0 - Exit");
 	Console.WriteLine("1 - Color wipe animation");
 	Console.WriteLine("2 - Rainbow color animation");
-
 	Console.Write("What is your choice: ");
-	input = int.Parse(Console.ReadLine());
+
+	if (!int.TryParse(Console.ReadLine(), out input))
+	{
+		Console.WriteLine("Invalid option.");
+		Thread.Sleep(1000);
+		input = -1;
+		continue;
+	}
 
 	var animation = GetAnimation(input);
+
 	if (animation != null)
 	{
-		abort.IsAbortRequested = false;
-		animation.Execute(abort);
+		animation.Execute(cancelSource.Token);
+
+		if (!cancelSource.TryReset())
+			cancelSource = new CancellationTokenSource();
 	}
 }
 while (input != 0);

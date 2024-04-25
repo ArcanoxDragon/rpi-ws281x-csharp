@@ -1,7 +1,9 @@
-﻿namespace TestApp
+﻿using System.Threading;
+
+namespace TestApp
 {
 	internal interface IAnimation
 	{
-		void Execute(AbortRequest request);
+		void Execute(CancellationToken cancellationToken);
 	}
 }

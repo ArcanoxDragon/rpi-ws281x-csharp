@@ -9,9 +9,9 @@ namespace TestApp
 		private static readonly Color[] AnimationColors = [
 			Color.FromArgb(0x201000),
 			Color.FromArgb(0x202000),
-			Color.Green,
+			Color.FromArgb(0x008000),
 			Color.FromArgb(0x002020),
-			Color.Blue,
+			Color.FromArgb(0x0000FF),
 			Color.FromArgb(0x100010),
 			Color.FromArgb(0x200010),
 		];
@@ -38,7 +38,7 @@ namespace TestApp
 				}
 
 				colorOffset++;
-				Thread.Sleep(50);
+				Thread.Sleep(1000);
 			}
 		}
 	}

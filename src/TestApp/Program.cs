@@ -47,7 +47,7 @@ do
 
 		var settings = Settings.CreateDefaultSettings();
 
-		settings.Channels[0] = new Channel(ledCount, 21, stripType: StripType.SK6812W_STRIP);
+		settings.Channels[0] = new Channel(ledCount, 21, invert: true, stripType: StripType.SK6812W_STRIP);
 
 		animation.Execute(settings, cancelSource.Token);
 
